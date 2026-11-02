@@ -20,7 +20,7 @@ def softmax(logits):
 
 class Model:
     def __init__(self, alphabet, seed=42):
-        if not alphabet or len(set(alphabet)) != len(alphabet):
+        if not isinstance(alphabet, str) or not 1 <= len(alphabet) <= 256 or len(set(alphabet)) != len(alphabet):
             raise ValueError("Alphabet must contain unique characters")
         self.alphabet = alphabet
         self.index = {c: i for i, c in enumerate(alphabet)}
@@ -55,7 +55,7 @@ class Model:
         return gradient
 
     def generate(self, prompt, length=120, seed=42, temperature=0.8):
-        if not prompt or not 0 <= length <= 10000:
+        if not isinstance(prompt, str) or not prompt or type(length) is not int or not 0 <= length <= 10000:
             raise ValueError("Need a prompt and length between 0 and 10000")
         if not math.isfinite(temperature) or temperature <= 0:
             raise ValueError("Temperature must be positive and finite")
@@ -75,9 +75,13 @@ class Model:
     @classmethod
     def load(cls, path):
         path = Path(path)
-        if path.stat().st_size > 4_000_000:
+        with path.open("rb") as handle:
+            raw = handle.read(4_000_001)
+        if len(raw) > 4_000_000:
             raise ValueError("Checkpoint too large")
-        data = json.loads(path.read_text(encoding="utf-8"))
+        data = json.loads(raw)
+        if not isinstance(data, dict):
+            raise ValueError("Invalid checkpoint object")
         alphabet = data.get("alphabet")
         if data.get("version") != 1 or not isinstance(alphabet, str) or not 1 <= len(alphabet) <= 256:
             raise ValueError("Invalid checkpoint alphabet or version")

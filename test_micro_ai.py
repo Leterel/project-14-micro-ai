@@ -49,6 +49,17 @@ class ModelTests(unittest.TestCase):
             with self.assertRaises((ValueError, KeyError)):
                 Model("ab").generate(prompt, length, temperature=temperature)
 
+    def test_checkpoint_root_and_parameter_budgets_fail_cleanly(self):
+        for alphabet in [None, [], "a"*257, "aa"]:
+            with self.assertRaises(ValueError): Model(alphabet)
+        for length in [True, 1.5, "2"]:
+            with self.assertRaises(ValueError): Model("ab").generate("a", length)
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "invalid.json"
+            for raw in ["[]", "null", '"text"', " "*4_000_001]:
+                path.write_text(raw)
+                with self.assertRaises(ValueError): Model.load(path)
+
 
 if __name__ == "__main__":
     unittest.main()
