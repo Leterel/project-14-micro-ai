@@ -9,6 +9,7 @@ import json
 import math
 from pathlib import Path
 import random
+from dataset import read_dataset
 
 
 def softmax(logits):
@@ -109,6 +110,7 @@ def main():
     train = commands.add_parser("train")
     train.add_argument("--steps", type=int, default=1000)
     train.add_argument("--output", type=Path, default=Path("model.json"))
+    train.add_argument("--corpus", type=Path, default=Path(__file__).with_name("corpus.txt"))
     generate = commands.add_parser("generate")
     generate.add_argument("--model", type=Path, default=Path("model.json"))
     generate.add_argument("--prompt", default="die ")
@@ -120,10 +122,11 @@ def main():
             parser.error("steps must be between 1 and 10000")
         if args.output.exists():
             parser.error("output already exists; choose a new filename")
-        corpus = Path(__file__).with_name("corpus.txt").read_text(encoding="utf-8")
-        paragraphs = corpus.strip().split("\n\n")
-        training, validation = "\n".join(paragraphs[:-1]), paragraphs[-1]
-        model = Model("".join(sorted(set(corpus))))
+        try:
+            training, validation, alphabet, _ = read_dataset(args.corpus)
+        except (ValueError, OSError) as error:
+            parser.error(str(error))
+        model = Model(alphabet)
         data = pairs(training, model)
         before = model.loss(data)
         for _ in range(args.steps):

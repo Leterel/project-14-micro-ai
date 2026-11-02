@@ -1,2 +1,5 @@
 __pycache__/
 model*.json
+prepared/
+datasets/
+runs/

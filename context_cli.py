@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import random
 from context_model import ContextModel
+from dataset import read_dataset
 
 
 def main():
@@ -12,6 +13,7 @@ def main():
     train = commands.add_parser("train")
     train.add_argument("--steps", type=int, default=500)
     train.add_argument("--output", type=Path, required=True)
+    train.add_argument("--corpus", type=Path, default=Path(__file__).with_name("corpus.txt"))
     sample = commands.add_parser("generate")
     sample.add_argument("--model", type=Path, required=True)
     sample.add_argument("--prompt", default="die ")
@@ -24,10 +26,8 @@ def main():
                 parser.error("steps must be 1–2000")
             if args.output.exists():
                 parser.error("output exists; choose a new filename")
-            corpus = Path(__file__).with_name("corpus.txt").read_text(encoding="utf-8")
-            paragraphs = corpus.strip().split("\n\n")
-            training, held_out = "\n\n".join(paragraphs[:-1]), paragraphs[-1]
-            model = ContextModel("".join(sorted(set(training))))
+            training, held_out, alphabet, _ = read_dataset(args.corpus)
+            model = ContextModel(alphabet)
             examples = model.examples(training)
             validation = model.examples(held_out)
             before = model.loss(examples)

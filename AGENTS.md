@@ -21,7 +21,7 @@ Tests: `python -m unittest -v`. Bei mehreren Befehlen einzeln ausführen und jed
 - Projektwerkzeuge ändern keine anderen Projektquellen. Build-/Testartefakte in isolierten, ignorierten Arbeitsordnern halten. Vorhandene Ausgaben nicht unbesehen überschreiben.
 
 ## Nächste sichere Etappe
-Didaktischen Daten-/Tokenisierungsablauf kompakt erklären und reproduzierbare Mehrfach-Seed-Auswertung ergänzen; kein Cloudmodell nötig.
+Lokaler Datenaufbereitungs-/Trainings-/Inferenzablauf ist implementiert und geprüft. Mehrfach-Seed-Auswertung (1/42/2026) wurde ausgeführt. Als Nächstes den kleinen Lernumfang mit einer Lernperson abnehmen; kein Cloudmodell nötig.
 
 ## Übergabe
 HANDOFF.md aktualisieren: Ausgangscommit/Branch, konkrete Änderungsliste, ausgeführte Befehle, Ergebnis, ausgelassene Tests samt Grund, Risiken und nächste Etappe. Nur tatsächlich ausgeführte Tests als bestanden ausweisen. Vor Merge Diff und Tests prüfen; externe Freigaben bleiben offen.

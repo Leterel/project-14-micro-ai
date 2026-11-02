@@ -91,6 +91,42 @@ cross-entropies 2.714 (unigram), 1.974 (bigram), 1.455 (context network), lower
 is better. This is one 72-target paragraph, not a general language benchmark.
 Generated text remains unreliable character sequences, not factual answers.
 
+## Complete small local learning loop
+
+The character tokenizer maps each training character to a numeric index.
+One-hot context selects input weights; the tanh layer transforms the context;
+softmax predicts the next character. Cross-entropy measures mistakes and
+backpropagation updates weights. Sampling chooses characters from that learned
+distribution. No pretrained model is hidden behind this demonstration.
+
+You can prepare your own small, permitted UTF-8 text. Keep at least two distinct
+paragraphs; the final one is held out. Preparation normalizes NFC/LF, trims line
+edges and removes exact duplicate paragraphs before splitting. The vocabulary
+comes solely from training; unseen validation characters cause an explicit
+error. Nothing is silently removed from validation to improve a score.
+
+```powershell
+python prepare_corpus.py corpus.txt --output prepared
+python context_cli.py train --corpus prepared/corpus.txt --steps 250 --output model-prepared.json
+python context_cli.py generate --model model-prepared.json --prompt "die "
+python evaluate.py --corpus prepared/corpus.txt --steps 250 --seed 42
+```
+
+The output directory must be new. Input files and previous checkpoints remain
+untouched. `prepared/manifest.json` records input/output hashes, cleaning rules,
+split sizes and vocabulary size. Input is bounded to 4 MB and the cleaned toy
+corpus to 20,000 characters to keep this experiment small. Prepared datasets and
+model files are ignored by Git. This is not a personal-data anonymizer: do not
+use private or third-party text without permission, or publish generated data
+merely because the program produced it. No scraper, cloud API or model download
+is involved.
+
+`python benchmark.py --seeds 1,42,2026 --steps 250` repeats the same comparison
+for three initializations and reports each run, mean and sample standard
+deviation. It does not select a favorable seed or write checkpoints. This still
+uses one tiny validation paragraph, so it cannot establish general language
+quality or statistical significance.
+
 ## Entwicklung und Übergabe
 
 [AGENTS.md](AGENTS.md) bündelt den Einstieg für Entwickler und KI-Agenten; [TESTING.md](TESTING.md) nennt reproduzierbare Prüfungen und deren Grenzen. Der aktuelle Übergabestand steht in [HANDOFF.md](HANDOFF.md).
