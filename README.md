@@ -44,4 +44,24 @@ Build a small AI system from the ground up, understand its internals, train it a
 
 ## Initial status
 
-Planning only. Implementation has not started.
+First educational milestone implemented on 2026-11-02: a character bigram
+neural language model in pure Python, with learned logits, softmax,
+cross-entropy and analytic gradients. It starts from random weights and trains
+on the original text in `corpus.txt`. No downloaded model or paid service.
+
+```powershell
+python -m unittest -v
+python micro_ai.py train --steps 1000 --output model.json
+python micro_ai.py generate --model model.json --prompt "die "
+```
+
+Python 3.12 or newer; no package installation. Existing model files are never
+overwritten. Checkpoints contain numbers and an alphabet, not executable pickle.
+The final paragraph is held out from training. Reported losses are per next
+character; this tiny corpus is not a representative language benchmark.
+
+This model has only one character of context. Output is mostly invented
+character sequences, not reliable German or answers. No chat, persistent memory,
+API, transformer, GPU training or production model is implemented yet.
+Next: compare against a frequency baseline, enlarge the original corpus, then
+implement a context window and hidden layer with gradient checks.
