@@ -1,4 +1,4 @@
-# PROJECT #15: MICRO AI FROM SCRATCH
+# PROJECT #14: MICRO AI FROM SCRATCH
 
 Status: Concept / planning
 Owner: Leterel
